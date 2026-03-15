@@ -6,6 +6,12 @@ Gladiator pits two autonomous AI companies (**Blitz**, growth-first, vs **Craft*
 
 Built for the [Nous Research Hermes Agent Hackathon](https://nous.hermes.dev/) (March 2026).
 
+<p align="center">
+  <img src="assets/glad_1.png" alt="Gladiator landing page" width="700"/>
+  <br/>
+  <img src="assets/glad_2.png" alt="Competitors and stack" width="700"/>
+</p>
+
 ---
 
 ## What You'll See
@@ -18,21 +24,9 @@ Built for the [Nous Research Hermes Agent Hackathon](https://nous.hermes.dev/) (
 
 ## Architecture
 
-```
-┌─────────────┐     heartbeats      ┌──────────────────┐
-│  Paperclip  │ ──────────────────► │   Hermes Agent   │
-│  :3100      │ ◄────────────────── │   (9 instances)  │
-│  (orchestr) │   task completion   │   Claude Sonnet  │
-└──────┬──────┘                     └────────┬─────────┘
-       │                                     │
-       │ company/agent/issue APIs            │ skills, memory, sessions
-       │                                     │ in ~/.hermes/gladiator/
-┌──────┴──────┐     evidence.db     ┌────────┴─────────┐
-│  Dashboard  │ ◄────────────────── │    Watcher        │
-│  :4000      │                     │  (polls every 5s) │
-│  (FastAPI)  │                     └──────────────────┘
-└─────────────┘
-```
+<p align="center">
+  <img src="assets/hermes_system_architecture.svg" alt="System Architecture" width="680"/>
+</p>
 
 | Component | Tech | Port |
 |-----------|------|------|
