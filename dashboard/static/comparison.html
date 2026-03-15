@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLADIATOR - Repo Comparison</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x2694;</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0f; --surface: #12121a; --surface2: #1a1a2e; --border: #2a2a3e;
+            --text: #e0e0e8; --text-dim: #8888a0;
+            --blitz-primary: #ff6b35; --craft-primary: #4ecdc4;
+            --gold: #ffd700; --green: #4caf50; --red: #ff4757;
+        }
+        body { font-family: 'JetBrains Mono', 'Fira Code', monospace; background: var(--bg); color: var(--text); }
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+        .header { text-align: center; margin-bottom: 32px; }
+        .header h1 { font-size: 1.8rem; background: linear-gradient(135deg, var(--blitz-primary), var(--gold), var(--craft-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+        .header p { color: var(--text-dim); font-size: 0.8rem; }
+        .back-link { color: var(--craft-primary); text-decoration: none; font-size: 0.75rem; }
+
+        .start-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 32px; text-align: center; }
+        .start-box h2 { font-size: 0.8rem; color: var(--gold); letter-spacing: 2px; margin-bottom: 8px; }
+        .start-box .code { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-size: 0.75rem; color: var(--green); display: inline-block; margin: 4px 0; }
+        .start-box .note { font-size: 0.7rem; color: var(--text-dim); margin-top: 8px; }
+        .start-files { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+        .start-file { background: var(--surface2); padding: 3px 10px; border-radius: 3px; font-size: 0.65rem; color: var(--text-dim); }
+
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .company-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .company-panel.blitz { border-top: 3px solid var(--blitz-primary); }
+        .company-panel.craft { border-top: 3px solid var(--craft-primary); }
+        .panel-header { padding: 16px; border-bottom: 1px solid var(--border); }
+        .panel-name { font-size: 1.2rem; font-weight: bold; }
+        .blitz .panel-name { color: var(--blitz-primary); }
+        .craft .panel-name { color: var(--craft-primary); }
+        .panel-strategy { font-size: 0.7rem; color: var(--text-dim); font-style: italic; margin-top: 4px; }
+        .panel-body { padding: 16px; }
+
+        .section-label { font-size: 0.6rem; font-weight: bold; letter-spacing: 2px; color: var(--text-dim); margin: 16px 0 8px; }
+        .section-label:first-child { margin-top: 0; }
+
+        .stat-row { display: flex; gap: 16px; margin-bottom: 12px; }
+        .stat-box { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px; text-align: center; }
+        .stat-value { font-size: 1.4rem; font-weight: bold; }
+        .blitz .stat-value { color: var(--blitz-primary); }
+        .craft .stat-value { color: var(--craft-primary); }
+        .stat-name { font-size: 0.6rem; color: var(--text-dim); letter-spacing: 1px; margin-top: 2px; }
+
+        .commit-list { list-style: none; }
+        .commit-list li { font-size: 0.72rem; padding: 5px 0; border-bottom: 1px solid var(--border); color: var(--text); }
+        .commit-list li:last-child { border-bottom: none; }
+        .commit-hash { color: var(--text-dim); font-size: 0.65rem; margin-right: 6px; }
+
+        .file-list { list-style: none; columns: 2; column-gap: 16px; }
+        .file-list li { font-size: 0.65rem; color: var(--text-dim); padding: 2px 0; }
+        .file-new { color: var(--green); }
+        .file-modified { color: var(--gold); }
+
+        .work-item { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-bottom: 8px; }
+        .work-item-title { font-size: 0.75rem; font-weight: bold; color: var(--text); }
+        .work-item-agent { font-size: 0.6rem; color: var(--text-dim); margin-top: 2px; }
+        .work-item-desc { font-size: 0.7rem; color: var(--text-dim); margin-top: 4px; line-height: 1.4; }
+
+        .skill-tag { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 0.65rem; margin: 2px; background: rgba(255,215,0,0.1); color: var(--gold); border: 1px solid rgba(255,215,0,0.2); }
+
+        @media (max-width: 900px) { .comparison { grid-template-columns: 1fr; } .file-list { columns: 1; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>REPO COMPARISON</h1>
+            <p>Starting state vs what each company built</p>
+            <a href="/" class="back-link">&larr; Back to Dashboard</a>
+        </div>
+
+        <div class="start-box">
+            <h2>STARTING STATE (IDENTICAL FOR BOTH)</h2>
+            <div class="code">llm-judge v0.1.0 &mdash; A Python CLI tool to compare LLM responses</div>
+            <div class="start-files">
+                <span class="start-file">src/llm_judge/cli.py</span>
+                <span class="start-file">src/llm_judge/judge.py</span>
+                <span class="start-file">src/llm_judge/display.py</span>
+                <span class="start-file">src/llm_judge/__init__.py</span>
+                <span class="start-file">setup.py</span>
+                <span class="start-file">README.md</span>
+            </div>
+            <div class="note">Both companies received the exact same codebase. Everything below was built autonomously by AI agents.</div>
+        </div>
+
+        <div class="comparison" id="comparison">
+            <div class="loading" style="grid-column:1/-1;text-align:center;color:var(--text-dim);padding:40px">Loading comparison data...</div>
+        </div>
+    </div>
+
+    <script>
+    async function loadComparison() {
+        const [codeData, stateData, skillsBlitz, skillsCraft, auditData, agentDetails] = await Promise.all([
+            fetch('/api/code-comparison').then(r => r.json()),
+            fetch('/api/state').then(r => r.json()),
+            fetch('/api/skills/blitz').then(r => r.json()),
+            fetch('/api/skills/craft').then(r => r.json()),
+            fetch('/api/audit').then(r => r.json()),
+            fetch('/api/agent-details').then(r => r.json()),
+        ]);
+
+        const el = document.getElementById('comparison');
+        el.innerHTML = renderPanel('blitz', codeData.blitz, stateData.blitz, skillsBlitz, auditData.blitz)
+                     + renderPanel('craft', codeData.craft, stateData.craft, skillsCraft, auditData.craft);
+
+        // Add comparison chart section
+        const chartSection = document.createElement('div');
+        chartSection.style.cssText = 'grid-column:1/-1; margin-top:32px;';
+        chartSection.innerHTML = renderComparisonChart(agentDetails);
+        el.appendChild(chartSection);
+
+        // Add agent details section below
+        const agentSection = document.createElement('div');
+        agentSection.style.cssText = 'grid-column:1/-1; margin-top:24px;';
+        agentSection.innerHTML = '<div style="font-size:0.7rem;font-weight:bold;letter-spacing:3px;color:var(--text-dim);text-align:center;margin-bottom:16px">AGENT-BY-AGENT BREAKDOWN</div>'
+            + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'
+            + renderAgentCards(agentDetails, 'blitz')
+            + renderAgentCards(agentDetails, 'craft')
+            + '</div>';
+        el.appendChild(agentSection);
+
+        // Load memory content for agents that have it
+        for (const [key, a] of Object.entries(agentDetails)) {
+            if (a.memory_progression.length > 0) {
+                fetch('/api/memory-content/' + key).then(r => r.json()).then(data => {
+                    const memEl = document.getElementById('memory-content-' + key);
+                    if (memEl && data.sections && data.sections.length > 0) {
+                        memEl.style.display = 'block';
+                        memEl.innerHTML = data.sections.map(s =>
+                            '<div style="margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--border)">' + esc(s.substring(0, 200)) + (s.length > 200 ? '...' : '') + '</div>'
+                        ).join('');
+                    }
+                }).catch(() => {});
+            }
+        }
+    }
+
+    function renderComparisonChart(details) {
+        // Aggregate by company
+        const companies = {blitz: {heartbeats:0, skills:0, memory:0, effGains:0, tasks:0, cost:0, agents:0},
+                           craft: {heartbeats:0, skills:0, memory:0, effGains:0, tasks:0, cost:0, agents:0}};
+
+        for (const [key, a] of Object.entries(details)) {
+            const c = companies[a.company];
+            if (!c) continue;
+            c.heartbeats += a.heartbeats;
+            c.skills += a.skills.length;
+            c.tasks += (a.tasks_done || 0);
+            c.cost += a.total_cost;
+            c.agents++;
+            c.effGains += a.milestones.filter(m => m.milestone_type === 'efficiency_gain').length;
+            if (a.memory_progression.length > 0) {
+                c.memory += a.memory_progression[a.memory_progression.length - 1].chars;
+            }
+        }
+
+        const metrics = [
+            {label: 'TASKS DONE',       blitz: companies.blitz.tasks,      craft: companies.craft.tasks,      unit: ''},
+            {label: 'HEARTBEATS',       blitz: companies.blitz.heartbeats, craft: companies.craft.heartbeats, unit: ''},
+            {label: 'SKILLS CREATED',   blitz: companies.blitz.skills,     craft: companies.craft.skills,     unit: ''},
+            {label: 'MEMORY (chars)',    blitz: companies.blitz.memory,     craft: companies.craft.memory,     unit: ''},
+            {label: 'EFFICIENCY GAINS', blitz: companies.blitz.effGains,   craft: companies.craft.effGains,   unit: ''},
+            {label: 'TOTAL COST',       blitz: companies.blitz.cost,       craft: companies.craft.cost,       unit: '$', decimals: 2},
+        ];
+
+        const rows = metrics.map(m => {
+            const max = Math.max(m.blitz, m.craft, 1);
+            const bPct = Math.round(m.blitz / max * 100);
+            const cPct = Math.round(m.craft / max * 100);
+            const bVal = m.unit === '$' ? '$' + m.blitz.toFixed(m.decimals || 0) : m.blitz;
+            const cVal = m.unit === '$' ? '$' + m.craft.toFixed(m.decimals || 0) : m.craft;
+            const bWin = m.blitz > m.craft;
+            const cWin = m.craft > m.blitz;
+
+            return `<div style="display:grid;grid-template-columns:1fr 100px 1fr;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+                <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end">
+                    <span style="font-size:0.75rem;font-weight:bold;color:var(--blitz-primary)">${bVal}${bWin ? ' &#9733;' : ''}</span>
+                    <div style="width:60%;height:18px;background:var(--bg);border-radius:3px;overflow:hidden;border:1px solid var(--border);direction:rtl">
+                        <div style="width:${bPct}%;height:100%;background:var(--blitz-primary);border-radius:2px;opacity:0.8"></div>
+                    </div>
+                </div>
+                <div style="text-align:center;font-size:0.6rem;font-weight:bold;letter-spacing:1px;color:var(--text-dim)">${m.label}</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                    <div style="width:60%;height:18px;background:var(--bg);border-radius:3px;overflow:hidden;border:1px solid var(--border)">
+                        <div style="width:${cPct}%;height:100%;background:var(--craft-primary);border-radius:2px;opacity:0.8"></div>
+                    </div>
+                    <span style="font-size:0.75rem;font-weight:bold;color:var(--craft-primary)">${cVal}${cWin ? ' &#9733;' : ''}</span>
+                </div>
+            </div>`;
+        }).join('');
+
+        return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;overflow:hidden">
+            <div style="font-size:0.7rem;font-weight:bold;letter-spacing:3px;color:var(--text-dim);text-align:center;margin-bottom:16px">COMPANY COMPARISON</div>
+            <div style="display:grid;grid-template-columns:1fr 100px 1fr;gap:8px;padding-bottom:8px;border-bottom:2px solid var(--border);margin-bottom:8px">
+                <div style="text-align:right;font-size:0.9rem;font-weight:bold;color:var(--blitz-primary)">&#9889; BLITZ <span style="font-size:0.6rem;color:var(--text-dim)">(${companies.blitz.agents} agents)</span></div>
+                <div style="text-align:center;font-size:0.7rem;color:var(--gold);font-weight:bold">VS</div>
+                <div style="font-size:0.9rem;font-weight:bold;color:var(--craft-primary)">CRAFT &#128296; <span style="font-size:0.6rem;color:var(--text-dim)">(${companies.craft.agents} agents)</span></div>
+            </div>
+            ${rows}
+        </div>`;
+    }
+
+    function renderAgentCards(details, company) {
+        const roleOrder = {'ceo': 0, 'cto': 1, 'cmo': 2, 'engineer': 3, 'qa': 4, 'general': 5};
+        const agents = Object.entries(details)
+            .filter(([k,v]) => v.company === company)
+            .sort(([,a],[,b]) => (roleOrder[a.role] ?? 9) - (roleOrder[b.role] ?? 9));
+        if (!agents.length) return '';
+
+        return '<div>' + agents.map(([key, a]) => {
+            const color = company === 'blitz' ? 'var(--blitz-primary)' : 'var(--craft-primary)';
+            const modelShort = (a.model || '').includes('sonnet') ? 'Sonnet' : 'Haiku';
+
+            const taskList = (a.tasks || []).map(t =>
+                `<div style="font-size:0.65rem;padding:3px 0;border-bottom:1px solid var(--border)">${t.status === 'done' ? '&check;' : '&bull;'} ${esc(t.title)}</div>`
+            ).join('');
+
+            const skillTags = (a.skills || []).map(s =>
+                `<span class="skill-tag">${esc(s.skill_name)} v${s.version}</span>`
+            ).join('');
+
+            const memBar = a.memory_progression.length > 0
+                ? (() => {
+                    const latest = a.memory_progression[a.memory_progression.length - 1];
+                    const pct = Math.round(latest.chars / 2200 * 100);
+                    return `<div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;height:16px;overflow:hidden;margin-top:4px">
+                        <div style="width:${pct}%;height:100%;background:${color};border-radius:3px;display:flex;align-items:center;padding-left:6px;font-size:0.55rem;color:white">${latest.chars}/2200 (${pct}%)</div>
+                    </div>`;
+                })()
+                : '<div style="font-size:0.65rem;color:var(--text-dim)">No memory saved yet</div>';
+
+            const milestoneList = (a.milestones || []).map(m => {
+                const badge = m.milestone_type.replace('_', ' ').toUpperCase();
+                return `<div style="font-size:0.6rem;padding:2px 0">&bull; <strong>${badge}</strong>: ${esc(m.description).substring(0, 80)}</div>`;
+            }).join('');
+
+            return `<div class="work-item" style="border-left:3px solid ${color}">
+                <div style="display:flex;justify-content:space-between;align-items:baseline">
+                    <div class="work-item-title" style="color:${color}">${esc(a.name)}</div>
+                    <div style="font-size:0.6rem;color:var(--text-dim)">${modelShort} &bull; ${a.heartbeats} heartbeats &bull; $${a.total_cost.toFixed(3)}</div>
+                </div>
+                <div class="work-item-agent">${esc(a.role.toUpperCase())}</div>
+
+                <div class="section-label">TASKS (${a.tasks.length})</div>
+                ${taskList || '<div style="font-size:0.65rem;color:var(--text-dim)">No tasks assigned</div>'}
+
+                <div class="section-label">SKILLS LEARNED (${a.skills.length})</div>
+                <div>${skillTags || '<span style="font-size:0.65rem;color:var(--text-dim)">No skills created</span>'}</div>
+
+                <div class="section-label">MEMORY</div>
+                ${memBar}
+                <div id="memory-content-${key}" style="margin-top:6px;font-size:0.6rem;color:var(--text-dim);max-height:80px;overflow-y:auto;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:6px;display:none"></div>
+
+                ${milestoneList ? '<div class="section-label">MILESTONES (' + a.milestones.length + ')</div>' + milestoneList : ''}
+            </div>`;
+        }).join('') + '</div>';
+    }
+
+    function renderPanel(key, code, state, skills, audit) {
+        const name = key === 'blitz' ? 'BLITZ' : 'CRAFT';
+        const strategy = key === 'blitz'
+            ? 'Growth hacking: ship fast, market hard'
+            : 'Technical excellence: build so good people share it';
+
+        const commits = (code.recent_commits || []).map(c => {
+            const hash = c.substring(0, 7);
+            const msg = c.substring(8);
+            return `<li><span class="commit-hash">${hash}</span>${esc(msg)}</li>`;
+        }).join('');
+
+        const newFiles = (code.file_tree || []).filter(f =>
+            !f.includes('__pycache__') && !f.includes('.egg-info') && !f.includes('.pytest_cache')
+        ).map(f => {
+            const cls = f.endsWith('.md') || f.includes('examples/') ? 'file-new' : '';
+            return `<li class="${cls}">${esc(f)}</li>`;
+        }).join('');
+
+        const skillTags = skills.map(s =>
+            `<span class="skill-tag">${esc(s.skill_name)} v${s.version}</span>`
+        ).join('');
+
+        const cat = code.categories || {};
+        const workItems = (audit || []).slice(0, 6).map(item => {
+            const icon = item.type === 'commit' ? 'COMMIT' : 'TASK';
+            return `<div class="work-item">
+                <div class="work-item-title">${esc(item.title)}</div>
+                <div class="work-item-agent">${icon} by ${esc(item.agent)}</div>
+            </div>`;
+        }).join('');
+
+        return `
+        <div class="company-panel ${key}">
+            <div class="panel-header">
+                <div class="panel-name">${name}</div>
+                <div class="panel-strategy">${strategy}</div>
+            </div>
+            <div class="panel-body">
+                <div class="section-label">KEY STATS</div>
+                <div class="stat-row">
+                    <div class="stat-box"><div class="stat-value">${code.commits || 0}</div><div class="stat-name">COMMITS</div></div>
+                    <div class="stat-box"><div class="stat-value">${code.files || 0}</div><div class="stat-name">FILES</div></div>
+                    <div class="stat-box"><div class="stat-value">${state.skills_count || 0}</div><div class="stat-name">SKILLS</div></div>
+                    <div class="stat-box"><div class="stat-value">${state.issues_done || 0}</div><div class="stat-name">TASKS DONE</div></div>
+                </div>
+
+                <div class="section-label">FILE CATEGORIES</div>
+                <div class="stat-row">
+                    <div class="stat-box"><div class="stat-value">${cat.features || 0}</div><div class="stat-name">CODE</div></div>
+                    <div class="stat-box"><div class="stat-value">${cat.tests || 0}</div><div class="stat-name">TESTS</div></div>
+                    <div class="stat-box"><div class="stat-value">${cat.docs || 0}</div><div class="stat-name">DOCS</div></div>
+                </div>
+
+                <div class="section-label">COMMITS (newest first)</div>
+                <ul class="commit-list">${commits || '<li>No commits</li>'}</ul>
+
+                <div class="section-label">SKILLS LEARNED</div>
+                <div>${skillTags || '<span style="color:var(--text-dim);font-size:0.7rem">No skills yet</span>'}</div>
+
+                <div class="section-label">AGENT WORK LOG</div>
+                ${workItems || '<div style="color:var(--text-dim);font-size:0.7rem">No activity</div>'}
+
+                <div class="section-label">FILE TREE (added/modified)</div>
+                <ul class="file-list">${newFiles}</ul>
+            </div>
+        </div>`;
+    }
+
+    function esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+    loadComparison();
+    </script>
+</body>
+</html>

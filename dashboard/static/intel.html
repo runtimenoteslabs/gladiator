@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLADIATOR - Intel Report</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x2694;</text></svg>">
+    <style>
+        .intel-container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        .intel-title {
+            font-size: 2rem; letter-spacing: 8px; font-weight: bold; text-align: center;
+            background: linear-gradient(135deg, var(--purple), var(--gold));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+        .intel-subtitle { text-align: center; font-size: 0.7rem; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 24px; }
+        .intel-nav { text-align: center; margin-bottom: 24px; }
+        .intel-nav a {
+            color: var(--gold); font-size: 0.7rem; letter-spacing: 2px; text-decoration: none;
+            padding: 4px 14px; border: 1px solid var(--gold); border-radius: 4px; opacity: 0.7;
+        }
+        .intel-nav a:hover { opacity: 1; }
+        .intel-summary {
+            font-size: 1rem; font-weight: bold; color: var(--gold); text-align: center;
+            padding: 12px 16px; margin-bottom: 24px;
+            background: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.15);
+            border-radius: 8px; letter-spacing: 1px;
+        }
+        .intel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+        .intel-panel {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+        }
+        .intel-panel-title {
+            font-size: 0.65rem; font-weight: bold; letter-spacing: 2px; color: var(--text-dim);
+            margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+        }
+        .check-row {
+            display: flex; align-items: center; gap: 10px; padding: 8px 0;
+            border-bottom: 1px solid var(--border); font-size: 0.78rem;
+        }
+        .check-row:last-child { border-bottom: none; }
+        .check-icon { font-size: 0.9rem; flex-shrink: 0; }
+        .check-name { font-weight: bold; min-width: 120px; }
+        .check-pass .check-name { color: var(--green); }
+        .check-warn .check-name { color: var(--gold); }
+        .check-fail .check-name { color: #ff4444; }
+        .check-detail { color: var(--text-dim); }
+        .insight-row {
+            padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; line-height: 1.5;
+        }
+        .insight-row:last-child { border-bottom: none; }
+        .insight-type {
+            display: inline-block; font-size: 0.55rem; font-weight: bold; letter-spacing: 1px;
+            padding: 2px 8px; border-radius: 3px; margin-right: 10px;
+            background: var(--surface2); vertical-align: middle;
+        }
+        .insight-text { color: var(--text); }
+        .type-pace { color: var(--blitz-primary); }
+        .type-divergence { color: var(--gold); }
+        .type-learning { color: var(--craft-primary); }
+        .type-strategy { color: var(--purple); }
+        .empty-msg { font-size: 0.75rem; color: var(--text-dim); padding: 12px 0; }
+        .refresh-info {
+            text-align: center; font-size: 0.6rem; letter-spacing: 2px;
+            color: var(--text-dim); margin-top: 24px; opacity: 0.5;
+        }
+        @media (max-width: 768px) { .intel-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="intel-container">
+        <div class="intel-title">INTEL REPORT</div>
+        <div class="intel-subtitle">LIVE CONSISTENCY CHECKS &amp; STRATEGIC ANALYSIS</div>
+        <div class="intel-nav">
+            <a href="/">BACK TO DASHBOARD</a>
+        </div>
+
+        <div class="intel-summary" id="intel-summary">Waiting for competition data...</div>
+
+        <!-- Current state -->
+        <div class="intel-grid" style="margin-bottom:24px">
+            <div class="intel-panel">
+                <div class="intel-panel-title">CURRENT SYSTEM CHECKS</div>
+                <div id="intel-checks"><div class="empty-msg">No checks yet</div></div>
+            </div>
+            <div class="intel-panel">
+                <div class="intel-panel-title">CURRENT INSIGHTS</div>
+                <div id="intel-insights"><div class="empty-msg">Waiting for agent activity...</div></div>
+            </div>
+        </div>
+
+        <!-- History log -->
+        <div class="intel-panel" style="margin-bottom:24px">
+            <div class="intel-panel-title">HEARTBEAT HISTORY LOG</div>
+            <div id="intel-history"><div class="empty-msg">No heartbeats recorded yet. History will accumulate as agents complete work.</div></div>
+        </div>
+
+        <div class="refresh-info">AUTO-REFRESHING EVERY 5 SECONDS</div>
+    </div>
+
+    <script>
+    function renderChecks(checks, el) {
+        if (!checks?.length) return;
+        el.innerHTML = checks.map(c => {
+            const icon = c.status === 'pass' ? '\u2705' : c.status === 'warn' ? '\u26A0\uFE0F' : '\u274C';
+            const cls = 'check-' + c.status;
+            return `<div class="check-row ${cls}">
+                <span class="check-icon">${icon}</span>
+                <span class="check-name">${c.name}</span>
+                <span class="check-detail">${c.detail}</span>
+            </div>`;
+        }).join('');
+    }
+
+    function renderInsights(insights, el) {
+        if (!insights?.length) {
+            el.innerHTML = '<div class="empty-msg">Waiting for agent activity...</div>';
+            return;
+        }
+        el.innerHTML = insights.map(i => {
+            return `<div class="insight-row">
+                <span class="insight-type type-${i.type}">${i.type.toUpperCase()}</span>
+                <span class="insight-text">${i.text}</span>
+            </div>`;
+        }).join('');
+    }
+
+    async function fetchInsights() {
+        try {
+            const data = await fetch('/api/insights').then(r => r.json());
+            const current = data.current || {};
+            const history = data.history || [];
+
+            // Summary
+            const summaryEl = document.getElementById('intel-summary');
+            if (current.summary) summaryEl.textContent = current.summary;
+
+            // Current checks & insights
+            renderChecks(current.checks, document.getElementById('intel-checks'));
+            renderInsights(current.insights, document.getElementById('intel-insights'));
+
+            // History log (newest first)
+            const historyEl = document.getElementById('intel-history');
+            if (history.length) {
+                historyEl.innerHTML = [...history].reverse().map((snap, idx) => {
+                    const num = history.length - idx;
+                    const checksHtml = (snap.checks || []).map(c => {
+                        const icon = c.status === 'pass' ? '\u2705' : c.status === 'warn' ? '\u26A0\uFE0F' : '\u274C';
+                        return `<span style="margin-right:12px;font-size:0.7rem">${icon} ${c.name}: ${c.detail}</span>`;
+                    }).join('');
+                    const insightsHtml = (snap.insights || []).map(i => {
+                        return `<div style="font-size:0.72rem;padding:2px 0;color:var(--text)">
+                            <span class="insight-type type-${i.type}" style="font-size:0.5rem">${i.type.toUpperCase()}</span>
+                            ${i.text}
+                        </div>`;
+                    }).join('') || '<div style="font-size:0.7rem;color:var(--text-dim)">No insights at this point</div>';
+
+                    return `<div style="padding:12px 0;border-bottom:2px solid var(--border);${idx===0?'':''}">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                            <div style="font-size:0.8rem;font-weight:bold;color:var(--purple)">Snapshot #${snap.snapshot || num} (${snap.elapsed}) &mdash; ${snap.heartbeat_total} heartbeats</div>
+                            <div style="font-size:0.7rem;color:var(--text-dim)">${snap.summary}</div>
+                        </div>
+                        <div style="margin-bottom:6px">${checksHtml}</div>
+                        <div>${insightsHtml}</div>
+                    </div>`;
+                }).join('');
+            } else {
+                historyEl.innerHTML = '<div class="empty-msg">No heartbeats recorded yet. History will accumulate as agents complete work.</div>';
+            }
+        } catch (e) {
+            console.error('Intel fetch error:', e);
+        }
+    }
+
+    fetchInsights();
+    setInterval(fetchInsights, 5000);
+    </script>
+</body>
+</html>

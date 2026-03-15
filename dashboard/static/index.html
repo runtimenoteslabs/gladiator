@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLADIATOR - Zero-Human Company Battle</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x2694;</text></svg>">
+</head>
+<body>
+
+    <!-- No competition overlay -->
+    <div id="no-competition-overlay" style="display:flex; position:fixed; inset:0; z-index:9999; background:rgba(10,10,15,0.95); align-items:center; justify-content:center; flex-direction:column; gap:20px;">
+        <div style="font-size:2.5rem; font-weight:bold; letter-spacing:8px; background:linear-gradient(135deg,#ff6b35,#ffd700,#4ecdc4); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">GLADIATOR</div>
+        <div style="color:#8888a0; font-size:0.85rem; letter-spacing:2px;">NO ACTIVE COMPETITION</div>
+        <div style="color:#e0e0e8; font-size:0.9rem; margin-top:8px;">Launch a demo from the landing page to start the competition.</div>
+        <a href="/landing" style="margin-top:16px; padding:12px 36px; font-family:inherit; font-size:0.9rem; font-weight:bold; letter-spacing:3px; color:white; background:linear-gradient(135deg,#ff6b35,#4ecdc4); border:none; border-radius:6px; text-decoration:none; cursor:pointer;">GO TO LANDING PAGE</a>
+    </div>
+
+    <!-- Winner announcement overlay -->
+    <div id="winner-overlay" style="display:none; position:fixed; inset:0; z-index:9998; background:rgba(10,10,15,0.92); align-items:center; justify-content:center; flex-direction:column;"></div>
+
+    <!-- Section 1: THE ARENA -->
+    <div class="header">
+        <h1>GLADIATOR</h1>
+        <div class="subtitle">ZERO-HUMAN COMPANY BATTLE &mdash; Powered by Hermes Agent + Paperclip</div>
+        <div class="arena-description">
+            <span class="arena-product">llm-judge</span>: Compare LLM responses side-by-side
+            <div class="arena-challenge">Same product. Same budget. Different strategies. Zero humans.</div>
+        </div>
+        <div style="margin-top:8px">
+            <a href="/comparison" style="color:var(--gold);font-size:0.7rem;letter-spacing:2px;text-decoration:none;padding:4px 14px;border:1px solid var(--gold);border-radius:4px;opacity:0.7;transition:opacity 0.2s;margin-right:12px" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">REPO COMPARISON &amp; AGENTS</a>
+            <a href="/intel" style="color:var(--purple);font-size:0.7rem;letter-spacing:2px;text-decoration:none;padding:4px 14px;border:1px solid var(--purple);border-radius:4px;opacity:0.7;transition:opacity 0.2s;margin-right:12px" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">INTEL REPORT</a>
+            <a href="#" onclick="fetch('/api/stop-demo',{method:'POST'}).then(()=>window.location='/landing')" style="color:#ff4444;font-size:0.7rem;letter-spacing:2px;text-decoration:none;padding:4px 14px;border:1px solid #ff4444;border-radius:4px;opacity:0.7;transition:opacity 0.2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">STOP &amp; EXIT</a>
+        </div>
+        <div class="timer-row">
+            <div class="timer-block">
+                <div class="timer" id="timer">00:00:00</div>
+                <div class="timer-label">ELAPSED</div>
+            </div>
+            <div>
+                <div class="progress-bar" style="width:300px">
+                    <div class="progress-fill" id="progress" style="width:0%"></div>
+                </div>
+            </div>
+            <div class="timer-block">
+                <div class="timer" id="timer-remaining" style="font-size:1.2rem;color:var(--text-dim)">--:--:--</div>
+                <div class="timer-label">REMAINING</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: THE COMPETITORS -->
+    <div class="scoreboard">
+        <div class="company-card blitz">
+            <div class="company-header">
+                <span class="company-name">BLITZ</span>
+                <span class="star-count" id="blitz-stars">0</span>
+            </div>
+            <div class="company-strategy">GOAL: Max GitHub stars via growth hacking &mdash; "Ship fast, market hard"</div>
+            <div class="stats-row">
+                <div class="stat">
+                    <div class="stat-value" id="blitz-cost">$0</div>
+                    <div class="stat-label">SPENT</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="blitz-tasks">0</div>
+                    <div class="stat-label">TASKS</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="blitz-skills">0</div>
+                    <div class="stat-label">SKILLS</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="blitz-heartbeats">0</div>
+                    <div class="stat-label">HEARTBEATS</div>
+                </div>
+            </div>
+            <div class="agents-list">
+                <h3>TEAM</h3>
+                <div id="blitz-agents"></div>
+            </div>
+        </div>
+
+        <div class="vs-divider">VS</div>
+
+        <div class="company-card craft">
+            <div class="company-header">
+                <span class="company-name">CRAFT</span>
+                <span class="star-count" id="craft-stars">0</span>
+            </div>
+            <div class="company-strategy">GOAL: Max GitHub stars via technical excellence &mdash; "Build something so good people share it"</div>
+            <div class="stats-row">
+                <div class="stat">
+                    <div class="stat-value" id="craft-cost">$0</div>
+                    <div class="stat-label">SPENT</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="craft-tasks">0</div>
+                    <div class="stat-label">TASKS</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="craft-skills">0</div>
+                    <div class="stat-label">SKILLS</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="craft-heartbeats">0</div>
+                    <div class="stat-label">HEARTBEATS</div>
+                </div>
+            </div>
+            <div class="agents-list">
+                <h3>TEAM</h3>
+                <div id="craft-agents"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content panels -->
+    <div class="content-grid">
+
+        <!-- Section 3: THE PLAN vs EXECUTION -->
+        <div class="section-panel full-width">
+            <div class="section-header">THE PLAN vs EXECUTION &mdash; Task boards showing strategic divergence</div>
+            <div class="taskboard-container">
+                <div class="taskboard-company">
+                    <div class="taskboard-company-label blitz-label">BLITZ</div>
+                    <div class="taskboard-columns" id="blitz-taskboard">
+                        <div class="taskboard-col">
+                            <div class="taskboard-col-header">TODO</div>
+                            <div class="taskboard-col-body" id="blitz-todo">
+                                <div class="empty-state">No tasks</div>
+                            </div>
+                        </div>
+                        <div class="taskboard-col">
+                            <div class="taskboard-col-header">IN PROGRESS</div>
+                            <div class="taskboard-col-body" id="blitz-in-progress">
+                                <div class="empty-state">No tasks</div>
+                            </div>
+                        </div>
+                        <div class="taskboard-col">
+                            <div class="taskboard-col-header">DONE</div>
+                            <div class="taskboard-col-body" id="blitz-done">
+                                <div class="empty-state">No tasks</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="taskboard-divider"></div>
+                <div class="taskboard-company">
+                    <div class="taskboard-company-label craft-label">CRAFT</div>
+                    <div class="taskboard-columns" id="craft-taskboard">
+                        <div class="taskboard-col">
+                            <div class="taskboard-col-header">TODO</div>
+                            <div class="taskboard-col-body" id="craft-todo">
+                                <div class="empty-state">No tasks</div>
+                            </div>
+                        </div>
+                        <div class="taskboard-col">
+                            <div class="taskboard-col-header">IN PROGRESS</div>
+                            <div class="taskboard-col-body" id="craft-in-progress">
+                                <div class="empty-state">No tasks</div>
+                            </div>
+                        </div>
+                        <div class="taskboard-col">
+                            <div class="taskboard-col-header">DONE</div>
+                            <div class="taskboard-col-body" id="craft-done">
+                                <div class="empty-state">No tasks</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: THE APPROACH DIFFERENCE -->
+        <div class="section-panel full-width">
+            <div class="section-header">THE APPROACH DIFFERENCE &mdash; How strategies shaped the codebase</div>
+            <div class="code-comparison" id="code-comparison">
+                <div class="comparison-side">
+                    <div class="comparison-label blitz-label">BLITZ</div>
+                    <div class="comparison-stats" id="blitz-code-stats">
+                        <div class="empty-state">Loading code stats...</div>
+                    </div>
+                    <div class="comparison-categories" id="blitz-categories"></div>
+                    <div class="comparison-commits" id="blitz-commits"></div>
+                </div>
+                <div class="comparison-divider"></div>
+                <div class="comparison-side">
+                    <div class="comparison-label craft-label">CRAFT</div>
+                    <div class="comparison-stats" id="craft-code-stats">
+                        <div class="empty-state">Loading code stats...</div>
+                    </div>
+                    <div class="comparison-categories" id="craft-categories"></div>
+                    <div class="comparison-commits" id="craft-commits"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 5: ACTIVITY TIMELINE (Gantt) -->
+        <div class="section-panel full-width">
+            <div class="section-header">ACTIVITY TIMELINE &mdash; Who worked on what, when</div>
+            <div class="gantt-container" id="gantt-chart">
+                <div class="empty-state">Waiting for agent activity...</div>
+            </div>
+        </div>
+
+        <!-- Section 6: AUDIT TRAIL — side by side -->
+        <div class="section-panel">
+            <div class="section-header" style="color:var(--blitz-primary)">BLITZ DECISIONS &mdash; What growth hackers shipped</div>
+            <div class="section-body" id="blitz-audit">
+                <div class="empty-state">No actions yet</div>
+            </div>
+        </div>
+
+        <div class="section-panel">
+            <div class="section-header" style="color:var(--craft-primary)">CRAFT DECISIONS &mdash; What quality engineers shipped</div>
+            <div class="section-body" id="craft-audit">
+                <div class="empty-state">No actions yet</div>
+            </div>
+        </div>
+
+        <!-- Section 7: LEARNING EVIDENCE (HERO) -->
+        <div class="section-panel full-width hero-section">
+            <div class="section-header hero-header">LEARNING EVIDENCE &mdash; Proof that Hermes agents get smarter over time</div>
+
+            <!-- 7a: Milestones Feed -->
+            <div class="hero-subsection">
+                <div class="hero-subsection-label">MILESTONES TIMELINE</div>
+                <div class="section-body" id="milestones-feed">
+                    <div class="empty-state">Agents haven't written skills or grown memory yet. This panel shows learning milestones as they happen.</div>
+                </div>
+            </div>
+
+            <!-- 7b: Skills side by side -->
+            <div class="hero-skills-grid">
+                <div class="hero-subsection">
+                    <div class="hero-subsection-label blitz-label">SKILL EVOLUTION &mdash; BLITZ</div>
+                    <div class="section-body" id="blitz-skill-diary">
+                        <div class="empty-state">No skills written yet.</div>
+                    </div>
+                </div>
+                <div class="hero-subsection">
+                    <div class="hero-subsection-label craft-label">SKILL EVOLUTION &mdash; CRAFT</div>
+                    <div class="section-body" id="craft-skill-diary">
+                        <div class="empty-state">No skills written yet.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7c: Memory & Knowledge Growth side by side -->
+            <div class="hero-skills-grid">
+                <div class="hero-subsection">
+                    <div class="hero-subsection-label blitz-label">KNOWLEDGE GROWTH &mdash; BLITZ</div>
+                    <div class="section-body" id="blitz-memory">
+                        <div class="empty-state">Agents save knowledge as skills &mdash; portable, versioned, reusable across sessions.</div>
+                    </div>
+                </div>
+                <div class="hero-subsection">
+                    <div class="hero-subsection-label craft-label">AGENT MEMORY &mdash; CRAFT</div>
+                    <div class="section-body" id="craft-memory">
+                        <div class="empty-state">Memory grows as agents learn facts about their environment and tasks.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 8: THE MERGE -->
+        <div class="section-panel full-width merge-section" id="merge-section">
+            <div class="section-header">THE MERGE &mdash; Two Companies Become One</div>
+            <div class="section-body" style="padding:24px;">
+                <div id="merge-status">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px">
+                        <div>
+                            <div style="font-size:0.7rem;font-weight:bold;letter-spacing:2px;color:var(--text-dim);margin-bottom:8px">WHAT HAPPENS</div>
+                            <ul style="list-style:none;font-size:0.78rem;color:var(--text);line-height:1.8">
+                                <li>&gt; All custom skills merge into one unified library</li>
+                                <li>&gt; Blitz's growth tactics + Craft's quality patterns combined</li>
+                                <li>&gt; Agents from rival companies become colleagues</li>
+                                <li>&gt; A post-merge task proves cross-company skill transfer</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div style="font-size:0.7rem;font-weight:bold;letter-spacing:2px;color:var(--text-dim);margin-bottom:8px">WHY THIS MATTERS</div>
+                            <ul style="list-style:none;font-size:0.78rem;color:var(--text);line-height:1.8">
+                                <li>&gt; Hermes skills are <strong style="color:var(--gold)">portable</strong> &mdash; they transfer between agents</li>
+                                <li>&gt; A Blitz engineer can now use Craft's "pytest-patterns" skill</li>
+                                <li>&gt; A Craft engineer can now use Blitz's "rapid-feature-shipping" skill</li>
+                                <li>&gt; No other agent framework can demonstrate this</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div style="text-align:center">
+                        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+                            <button onclick="doMerge()" class="action-btn merge-btn" id="merge-btn">MERGE COMPANIES</button>
+                            <button onclick="doUnmerge()" class="action-btn unmerge-btn" id="unmerge-btn" style="display:none">UN-MERGE (RESTORE)</button>
+                            <button onclick="doReset()" class="action-btn reset-btn">RESET DEMO</button>
+                        </div>
+                        <div id="merge-output" style="margin-top:16px;font-size:0.7rem;color:var(--text-dim);max-height:150px;overflow-y:auto;text-align:left"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <a href="/comparison" style="color:var(--gold);margin-right:16px">REPO COMPARISON &amp; AGENT DETAILS</a>
+        <a href="/landing" style="color:var(--text-dim);margin-right:16px">LANDING PAGE</a>
+        Built with <a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a> +
+        <a href="https://github.com/paperclipai/paperclip">Paperclip</a>
+        &mdash; Nous Research Hermes Agent Hackathon 2026
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>

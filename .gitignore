@@ -1,0 +1,77 @@
+# === SECRETS ===
+.env
+*.env.local
+*.env.production
+
+# === RUNTIME STATE (regenerated on each demo run) ===
+evidence.db
+evidence.db.backup
+evidence.db-journal
+merge_report.json
+gladiator_config.json
+
+# === PYTHON ===
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+*.egg
+
+# === VIRTUAL ENVIRONMENTS IN NESTED REPOS ===
+base-product/.venv/
+company_a/repo/.venv/
+company_b/repo/.venv/
+
+# === NESTED GIT REPOS (agent commits are runtime artifacts) ===
+company_a/repo/.git/
+company_b/repo/.git/
+
+# === IDE / OS ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.Zone.Identifier
+
+# === CLAUDE CODE LOCAL STATE ===
+.claude/
+
+# === LOGS ===
+*.log
+/tmp/
+
+# === AGENT-GENERATED ARTIFACTS (runtime, not source) ===
+# company repos are populated by agents during competition — not source code
+company_a/repo/
+company_b/repo/
+
+# === INTERNAL DOCS (build journal, session state, planning) ===
+PROGRESS_LOG.md
+CHECKPOINT.md
+DECISIONS.md
+AUDIT_REPORT.md
+COMPETITION_PLAN.md
+DASHBOARD_REDESIGN.md
+DEMO_PLAN.md
+JUDGE_LOG.md
+CLAUDE.md
+TOKEN_OPTIMIZATION.md
+ARCHITECTURE.md
+GLADIATOR_SPEC.md
+scripts/round1_tasks_backup.json
+scripts/cleanup.py
+scripts/update_agents.py
+
+# === BUILD ARTIFACTS ===
+**/htmlcov*/
+**/htmlcov_*/
+**/*.egg-info/
+*.backup
+
+# === MISC ===
+*.bak

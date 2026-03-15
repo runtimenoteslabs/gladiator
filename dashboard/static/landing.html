@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLADIATOR - Zero-Human Company Battle</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x2694;</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --surface2: #1a1a2e;
+            --border: #2a2a3e;
+            --text: #e0e0e8;
+            --text-dim: #8888a0;
+            --blitz-primary: #ff6b35;
+            --craft-primary: #4ecdc4;
+            --gold: #ffd700;
+            --green: #4caf50;
+            --purple: #b388ff;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .landing-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        /* Title section */
+        .title {
+            font-size: 4rem;
+            letter-spacing: 16px;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--blitz-primary), var(--gold), var(--craft-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            color: var(--text-dim);
+            margin-bottom: 32px;
+        }
+
+        .pitch {
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+            line-height: 1.6;
+        }
+        .pitch em { color: var(--gold); font-style: normal; font-weight: bold; }
+
+        /* The Product section */
+        .section-title {
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            color: var(--text-dim);
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .product-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 24px;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            text-align: left;
+        }
+
+        .product-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+
+        .product-desc {
+            font-size: 0.85rem;
+            color: var(--text);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .product-code {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-size: 0.8rem;
+            color: var(--green);
+            margin-bottom: 12px;
+        }
+
+        .product-note {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* The Challenge section */
+        .challenge-box {
+            background: var(--surface);
+            border: 1px solid var(--gold);
+            border-radius: 10px;
+            padding: 24px;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
+        }
+
+        .challenge-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+
+        .challenge-rules {
+            text-align: left;
+            list-style: none;
+        }
+
+        .challenge-rules li {
+            font-size: 0.8rem;
+            color: var(--text);
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+            line-height: 1.5;
+        }
+        .challenge-rules li:last-child { border-bottom: none; }
+        .rule-icon { color: var(--gold); flex-shrink: 0; }
+
+        /* The Question */
+        .question {
+            font-size: 1rem;
+            color: var(--text);
+            margin-bottom: 40px;
+            padding: 16px;
+            line-height: 1.6;
+        }
+        .question strong { color: var(--gold); }
+
+        /* Companies row */
+        .companies-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 0;
+            max-width: 1000px;
+            margin: 0 auto 24px;
+            align-items: start;
+        }
+
+        .company-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 24px;
+            text-align: left;
+        }
+        .company-card.blitz-card { border-left: 4px solid var(--blitz-primary); }
+        .company-card.craft-card { border-left: 4px solid var(--craft-primary); }
+
+        .company-card-name { font-size: 1.4rem; font-weight: bold; margin-bottom: 4px; }
+        .blitz-card .company-card-name { color: var(--blitz-primary); }
+        .craft-card .company-card-name { color: var(--craft-primary); }
+
+        .company-card-strategy {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            font-style: italic;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .approach-label {
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .approach-list {
+            list-style: none;
+            margin-bottom: 16px;
+        }
+        .approach-list li {
+            font-size: 0.75rem;
+            color: var(--text);
+            padding: 3px 0;
+            line-height: 1.4;
+        }
+        .approach-list li::before {
+            content: ">";
+            color: var(--text-dim);
+            margin-right: 8px;
+        }
+
+        .roster-label {
+            font-size: 0.6rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+
+        .agent-roster { list-style: none; }
+        .agent-roster li {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            padding: 3px 0;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+        .agent-roster li:last-child { border-bottom: none; }
+
+        .agent-role {
+            font-size: 0.6rem;
+            padding: 1px 6px;
+            border-radius: 3px;
+            background: var(--surface2);
+        }
+        .blitz-card .agent-role { color: var(--blitz-primary); }
+        .craft-card .agent-role { color: var(--craft-primary); }
+
+        .vs-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 16px;
+            font-size: 1.6rem;
+            color: var(--gold);
+            font-weight: bold;
+            opacity: 0.5;
+        }
+
+        /* Hermes callout */
+        .hermes-callout {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: var(--surface);
+            border: 1px solid var(--purple);
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .hermes-callout-title {
+            font-size: 0.85rem;
+            color: var(--purple);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .hermes-features {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .hermes-features li {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            padding: 6px 10px;
+            background: var(--bg);
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+        .hermes-features li strong { color: var(--text); }
+
+        /* Launch button */
+        .launch-section { margin: 40px 0; }
+
+        .launch-btn {
+            display: inline-block;
+            padding: 16px 48px;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            color: white;
+            background: linear-gradient(135deg, var(--blitz-primary), var(--craft-primary));
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .launch-btn:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 40px rgba(255, 107, 53, 0.3), 0 0 40px rgba(78, 205, 196, 0.3);
+        }
+
+        .footer-text {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            opacity: 0.6;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .title { font-size: 2.4rem; letter-spacing: 8px; }
+            .companies-row { grid-template-columns: 1fr; gap: 16px; }
+            .vs-center { padding: 8px 0; }
+            .hermes-features { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="landing-container">
+        <h1 class="title">GLADIATOR</h1>
+        <div class="subtitle">ZERO-HUMAN COMPANY BATTLE</div>
+        <p class="pitch">
+            Two AI companies. Same product. Same budget. Different strategies. <em>Let them fight.</em>
+        </p>
+
+        <!-- The Product -->
+        <div class="section-title">THE PRODUCT</div>
+        <div class="product-box">
+            <div class="product-name">llm-judge</div>
+            <div class="product-desc">
+                A Python CLI tool that compares LLM responses side-by-side. Send the same prompt to multiple models and see which one responds faster, cheaper, and better.
+            </div>
+            <div class="product-code">
+                $ llm-judge "Explain quantum computing" --models claude-haiku claude-sonnet claude-opus<br>
+                <span style="color:var(--text-dim)">  haiku:    673ms | 22 tokens | $0.0001 | quality: 3.2/5</span><br>
+                <span style="color:var(--text-dim)">  sonnet:  1498ms | 31 tokens | $0.0008 | quality: 4.1/5</span><br>
+                <span style="color:var(--text-dim)">  opus:    2341ms | 45 tokens | $0.0038 | quality: 4.8/5</span><br>
+                <span style="color:var(--gold)">  Verdict: opus (50% better quality, 38x more expensive) | haiku (3.5x faster, 38x cheaper)</span>
+            </div>
+            <div class="product-note">
+                Both companies start with an identical copy of this repo. Same code, same README, same structure. What they do with it is up to their AI agents &mdash; no human intervention after launch.
+            </div>
+        </div>
+
+        <!-- The Challenge -->
+        <div class="section-title">THE CHALLENGE</div>
+        <div class="challenge-box">
+            <div class="challenge-title">Maximize GitHub Stars. No Humans Allowed.</div>
+            <ul class="challenge-rules">
+                <li><span class="rule-icon">&gt;</span><span>Each company gets $20 in LLM API budget and a team of AI agents</span></li>
+                <li><span class="rule-icon">&gt;</span><span>Agents autonomously decide what to build, what to write, how to market</span></li>
+                <li><span class="rule-icon">&gt;</span><span>Zero human decisions after launch &mdash; agents strategize, code, test, and ship on their own</span></li>
+                <li><span class="rule-icon">&gt;</span><span>Agents learn as they go: writing reusable skills, growing persistent memory, building on prior sessions</span></li>
+                <li><span class="rule-icon">&gt;</span><span>After the competition, both companies merge &mdash; combining their learned skills into one team</span></li>
+            </ul>
+        </div>
+
+        <!-- The Question -->
+        <div class="question">
+            <strong>The question:</strong> When AI companies compete, does <span style="color:var(--blitz-primary)">growth hacking</span> or <span style="color:var(--craft-primary)">technical excellence</span> win more stars?<br>
+            And can we <em>prove</em> the agents actually got smarter along the way?
+        </div>
+
+        <!-- The Two Companies -->
+        <div class="section-title">THE COMPETITORS</div>
+        <div class="companies-row">
+            <div class="company-card blitz-card">
+                <div class="company-card-name">BLITZ</div>
+                <div class="company-card-strategy">"Ship fast, market hard" &mdash; Growth hacking strategy</div>
+
+                <div class="approach-label">THEIR APPROACH</div>
+                <ul class="approach-list">
+                    <li>Ship flashy features fast (speed-test, leaderboard, ASCII banners)</li>
+                    <li>Draft tweets and Show HN posts for every feature</li>
+                    <li>Prioritize screenshot-worthy terminal output</li>
+                    <li>Distribution beats product &mdash; get it out there</li>
+                </ul>
+
+                <div class="roster-label">AGENT ROSTER (4 agents)</div>
+                <ul class="agent-roster">
+                    <li><span>Blitz CEO</span><span class="agent-role">STRATEGY</span></li>
+                    <li><span>Blitz CMO</span><span class="agent-role">MARKETING</span></li>
+                    <li><span>Blitz Content</span><span class="agent-role">CONTENT</span></li>
+                    <li><span>Blitz Engineer</span><span class="agent-role">ENGINEERING</span></li>
+                </ul>
+            </div>
+
+            <div class="vs-center">VS</div>
+
+            <div class="company-card craft-card">
+                <div class="company-card-name">CRAFT</div>
+                <div class="company-card-strategy">"Build something so good people share it" &mdash; Technical excellence</div>
+
+                <div class="approach-label">THEIR APPROACH</div>
+                <ul class="approach-list">
+                    <li>Comprehensive test suite (40+ tests, 97% coverage)</li>
+                    <li>Clean architecture with type hints and docstrings</li>
+                    <li>README that converts visitors to stars</li>
+                    <li>Product beats distribution &mdash; make it genuinely useful</li>
+                </ul>
+
+                <div class="roster-label">AGENT ROSTER (5 agents)</div>
+                <ul class="agent-roster">
+                    <li><span>Craft CEO</span><span class="agent-role">STRATEGY</span></li>
+                    <li><span>Craft CTO</span><span class="agent-role">ARCHITECTURE</span></li>
+                    <li><span>Craft Engineer 1</span><span class="agent-role">CORE FEATURES</span></li>
+                    <li><span>Craft Engineer 2</span><span class="agent-role">TESTING / CI</span></li>
+                    <li><span>Craft Docs</span><span class="agent-role">DOCUMENTATION</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- The Stack -->
+        <div class="section-title">THE STACK</div>
+        <div class="hermes-callout" style="border-color: var(--craft-primary); margin-bottom: 16px;">
+            <div class="hermes-callout-title" style="color: var(--craft-primary);">PAPERCLIP &mdash; The Orchestrator</div>
+            <ul class="hermes-features">
+                <li><strong>Companies</strong> &mdash; Creates Blitz and Craft as separate orgs with $20 budgets</li>
+                <li><strong>Agents</strong> &mdash; Registers 9 agents with roles, models, and reporting chains (CEO &rarr; CTO &rarr; Engineer)</li>
+                <li><strong>Issues</strong> &mdash; Task management: agents pick up issues, check them out, mark done</li>
+                <li><strong>Heartbeats</strong> &mdash; Triggers agent work on schedule or on demand; tracks run status</li>
+            </ul>
+        </div>
+        <div class="hermes-callout">
+            <div class="hermes-callout-title">HERMES AGENT &mdash; The Worker Brain</div>
+            <ul class="hermes-features">
+                <li><strong>SOUL.md</strong> &mdash; Each agent has a personality file that drives its decisions and strategy</li>
+                <li><strong>Skills</strong> &mdash; Agents write reusable procedures (like "rich-cli-patterns") they can reference later</li>
+                <li><strong>Memory</strong> &mdash; Persistent notes that survive across sessions &mdash; agents remember what they learned</li>
+                <li><strong>Session Resume</strong> &mdash; Agents build on context from prior runs, not starting fresh each time</li>
+            </ul>
+        </div>
+
+        <!-- Launch -->
+        <div class="launch-section">
+            <a href="#" class="launch-btn" onclick="launchDemo(event)">LAUNCH DEMO</a>
+            <a href="/" class="launch-btn" style="background: var(--surface2); border: 1px solid var(--border); margin-left: 16px; font-size: 0.85rem; padding: 14px 32px;">VIEW DASHBOARD</a>
+            <script>
+            async function launchDemo(e) {
+                e.preventDefault();
+                const btn = e.target;
+                btn.textContent = 'RESETTING...';
+                btn.style.pointerEvents = 'none';
+                try {
+                    await fetch('/api/reset-demo', {method: 'POST'});
+                } catch(err) {}
+                btn.textContent = 'LAUNCHING...';
+                window.location.href = '/';
+            }
+            </script>
+        </div>
+
+        <div class="footer-text">
+            Built with Hermes Agent + Paperclip &mdash; Nous Research Hermes Agent Hackathon 2026
+        </div>
+    </div>
+</body>
+</html>

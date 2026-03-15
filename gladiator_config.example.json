@@ -1,0 +1,27 @@
+{
+  "timing": {
+    "competition_duration_seconds": 600,
+    "heartbeat_engineer_seconds": 120,
+    "heartbeat_support_seconds": 240,
+    "watcher_poll_seconds": 5
+  },
+  "blitz": {
+    "company_id": "YOUR_BLITZ_COMPANY_UUID",
+    "agents": {
+      "blitz-ceo": "AGENT_UUID",
+      "blitz-cmo": "AGENT_UUID",
+      "blitz-content": "AGENT_UUID",
+      "blitz-engineer": "AGENT_UUID"
+    }
+  },
+  "craft": {
+    "company_id": "YOUR_CRAFT_COMPANY_UUID",
+    "agents": {
+      "craft-ceo": "AGENT_UUID",
+      "craft-cto": "AGENT_UUID",
+      "craft-eng1": "AGENT_UUID",
+      "craft-eng2": "AGENT_UUID",
+      "craft-docs": "AGENT_UUID"
+    }
+  }
+}
