@@ -11,8 +11,13 @@ Gladiator pits two autonomous AI companies (**Blitz**, growth-first, vs **Craft*
 
 Built for the [Nous Research Hermes Agent Hackathon](https://nous.hermes.dev/) (March 2026).
 
-<!-- TODO: Replace with your YouTube video link -->
-<!-- [![Demo Video](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=VIDEO_ID) -->
+<p align="center">
+  <a href="https://youtu.be/YqLcMmzl3Yg">
+    <img src="https://img.youtube.com/vi/YqLcMmzl3Yg/maxresdefault.jpg" alt="Demo Video" width="700"/>
+  </a>
+  <br/>
+  <strong>Watch the full demo</strong>
+</p>
 
 <p align="center">
   <img src="assets/glad_1.png" alt="Gladiator landing page" width="700"/>
