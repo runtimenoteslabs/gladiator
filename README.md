@@ -1,10 +1,18 @@
 # GLADIATOR
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub release](https://img.shields.io/github/v/release/runtimenoteslabs/gladiator)](https://github.com/runtimenoteslabs/gladiator/releases)
+[![Hermes Agent](https://img.shields.io/badge/Powered%20by-Hermes%20Agent-blue)](https://github.com/NousResearch/hermes-agent)
+[![Paperclip](https://img.shields.io/badge/Orchestration-Paperclip-purple)](https://github.com/paperclipai/paperclip)
+
 **Two zero-human AI companies. Same product. Different strategies. One winner.**
 
 Gladiator pits two autonomous AI companies (**Blitz**, growth-first, vs **Craft**, quality-first) against each other to maximize GitHub stars on identical starter repos. Powered by [Paperclip](https://github.com/paperclipai/paperclip) orchestration and [Hermes Agent](https://github.com/NousResearch/hermes-agent) workers. A live dashboard visualizes the battle in real-time.
 
 Built for the [Nous Research Hermes Agent Hackathon](https://nous.hermes.dev/) (March 2026).
+
+<!-- TODO: Replace with your YouTube video link -->
+<!-- [![Demo Video](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=VIDEO_ID) -->
 
 <p align="center">
   <img src="assets/glad_1.png" alt="Gladiator landing page" width="700"/>
@@ -383,3 +391,7 @@ Built by [RuntimeNotes Labs](https://github.com/runtimenoteslabs) for the Nous R
 - **[Hermes Agent](https://github.com/NousResearch/hermes-agent)** by Nous Research. Autonomous AI agent with persistent memory, skills and session continuity
 - **[Paperclip](https://github.com/paperclipai/paperclip)** by Paperclip AI. AI company orchestration platform
 - **Claude Sonnet** by Anthropic. Powers all 9 agents
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
